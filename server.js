@@ -23,7 +23,7 @@ const server = net.createServer((socket) => {
 
 function handleMessage(socket, message) {
     const { type, payload } = message;
-
+    
     switch (type) {
         case 'JOIN':
             handleJoin(socket, payload);
@@ -98,7 +98,6 @@ function handleAttack(socket, payload) {
         ship.positions.forEach(pos => {
             if (pos.x === x && pos.y === y) {
                 result = "HIT";
-                // Qui si potrebbe aggiungere logica per "SUNK" verificando tutte le posizioni
             }
         });
     });
