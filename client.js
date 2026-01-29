@@ -59,22 +59,49 @@ function placeShips() {
         }
         rl.question(`Nave ${i + 1}: `, input => {
             const [x, y] = input.split(" ").map(Number);
+            // Verifica che i valori inseriti siano numerici
+            if (isNaN(x) || isNaN(y)) {
+                console.log("❌ Errore: Formato non valido. Inserire due interi (es: 3 4)");
+                return ask(i); // Ripete l'input per l'indice corrente
+            }
+
+            // Verifica che le coordinate siano entro i limiti della matrice 
+            if (x < 0 || x > 9 || y < 0 || y > 9) {
+                console.log("❌ Errore: Coordinate fuori dai limiti del campo (0-9).");
+                return ask(i);
+            }
+
+            // Verifica se la cella è già occupata da una nave 
+            if (myBoard[y][x] === "S") {
+                console.log("❌ Errore: Sovrapposizione rilevata. Cella già occupata.");
+                return ask(i);
+            }
             myBoard[y][x] = "S";
             ships.push({
                 name: "Ship",
                 size: 1,
                 positions: [{ x, y }]
             });
+            // Aggiornamento terminale
+            printBoards();
+            // Inserimento coordinate della nave successiva
             ask(i + 1);
         });
     }
+    // Avvio della sequenza di inserimento
     ask(0);
 }
 
 function attack() {
     rl.question("Attacca (x y): ", input => {
         const [x, y] = input.split(" ").map(Number);
-        socket.write(JSON.stringify({ type: "ATTACK", payload: { x, y } }) + "\n");
+        // Controllo validità coordinate prima dell'invio al server
+        if (x >= 0 && x <= 9 && y >= 0 && y <= 9) {
+             socket.write(JSON.stringify({ type: "ATTACK", payload: { x, y } }) + "\n");
+        } else {
+             console.log("Coordinate non valide, riprova.");
+             attack();
+        }
     });
 }
 
